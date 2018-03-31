@@ -11,7 +11,7 @@ def main():
     # load and set the logo
     logo = pygame.image.load("Logo.PNG")
     pygame.display.set_icon(logo)
-    pygame.display.set_caption("minimal program")
+    pygame.display.set_caption("Scott Chang looks for his son")
 
     # create a surface on screen that has the size of 240 x 180
     screenWidth = 1800

@@ -1,6 +1,8 @@
 # import the pygame module, so you can use it
 import pygame
+import time
 from Functions import constrain
+from Functions import Spawn
 
 
 # define a main function
@@ -38,8 +40,14 @@ def main():
     # define a variable to control the main loop
     running = True
 
+    zombies = []
+    startTime = 0
+    endTime = 0
+    gruntClock = 0
+
     # main loop
     while running:
+        startTime = time.time()
         # event handling, gets all event from the eventqueue
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -68,12 +76,27 @@ def main():
         Jager = pygame.image.load("Jager.PNG")
         screen.blit(Jager, (650, 500))
 
+        spawnX, spawnY = Spawn()
+
+        print(gruntClock)
+        if (gruntClock) >= 0.1:
+            zombies.append([spawnX, spawnY])
+            gruntClock = 0
+
+        Grunt = pygame.image.load("Grunt.PNG")
+        for j in range(len(zombies)):
+            positionX = zombies[j][0]
+            positionY = zombies[j][1]
+            screen.blit(Grunt, (positionX, positionY))
+
         screen.blit(Scott, (ScottX, ScottY))
         # and update the screen (dont forget that!)
         pygame.display.flip()
 
         # this will slow it down to 10 fps, so you can watch it,
         # otherwise it would run too fast
+        endTime = time.time()
+        gruntClock = gruntClock + (endTime - startTime)
         clock.tick(50)
 
 

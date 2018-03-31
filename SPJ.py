@@ -61,6 +61,9 @@ def main():
 
         # now blit the smily on screen
         screen.blit(background, (0,0))
+        Jager = pygame.image.load("Jager.PNG")
+        screen.blit(Jager, (100, 400))
+
         screen.blit(Scott, (ScottX, ScottY))
         # and update the screen (dont forget that!)
         pygame.display.flip()

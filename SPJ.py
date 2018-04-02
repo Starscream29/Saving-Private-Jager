@@ -3,6 +3,7 @@ import pygame
 import time
 from Functions import constrain
 from Functions import Spawn
+from collections import deque
 
 
 # define a main function
@@ -17,16 +18,16 @@ def main():
     pygame.display.set_caption("Scott Chang looks for his son")
 
     # create a surface on screen that has the size of 240 x 180
-    screenWidth = 1300
-    screenHeight = 650
+    screenWidth = 200
+    screenHeight = 200
     screen = pygame.display.set_mode((screenWidth, screenHeight))
 
     background = pygame.image.load("background.png")
     screen.blit(background, (0, 0))
 
     # define scott's initial position
-    ScottX = 650
-    ScottY = 300
+    ScottX = 50
+    ScottY = 50
     # how many pixels we move our scott
     step = 50
     # check if the scott is still on screen, if not change direction
@@ -44,6 +45,7 @@ def main():
     startTime = 0
     endTime = 0
     gruntClock = 0
+    zombies =[[0, 0]]
 
     # main loop
     while running:
@@ -74,16 +76,26 @@ def main():
         # now blit the scott on screen
         screen.blit(background, (0, 0))
         Jager = pygame.image.load("Jager.PNG")
-        screen.blit(Jager, (650, 500))
+        screen.blit(Jager, (150, 150))
 
-        spawnX, spawnY = Spawn()
-
-        print(gruntClock)
-        if (gruntClock) >= 0.1:
-            zombies.append([spawnX, spawnY])
-            gruntClock = 0
-
+        # spawnX, spawnY = Spawn()
+        #
+        # if (gruntClock) >= 0.1:
+        #     zombies.append([spawnX, spawnY])
+        #     gruntClock = 0
+        #
         Grunt = pygame.image.load("Grunt.PNG")
+        if gruntClock >= 0.03:
+            for i in range(len(zombies)):
+                currentLocation = [0, 0]
+                currentLocation = str(zombies[i][0]) + ' ' + str(zombies[i][1])
+                newLocation = [0, 0]
+                pathing = shortest_path(graph, currentLocation, '150 150')
+                newLocation[0], newLocation[1] = pathing[1].split()
+                zombies[i][0] = int(newLocation[0])
+                zombies[i][1] = int(newLocation[1])
+                gruntClock = 0
+
         for j in range(len(zombies)):
             positionX = zombies[j][0]
             positionY = zombies[j][1]
@@ -100,8 +112,58 @@ def main():
         clock.tick(50)
 
 
-# run the main function only if this module is executed as the main script
-# (if you import this as a module then nothing is executed)
-if __name__ == "__main__":
-    # call the main function
+def bfs(g, start):
+    queue, enqueued = deque([(None, start)]), set([start])
+    while queue:
+        parent, n = queue.popleft()
+        yield parent, n
+        new = set(g[n]) - enqueued
+        enqueued |= new
+        queue.extend([(n, child) for child in new])
+
+
+def dfs(g, start):
+    stack, enqueued = [(None, start)], set([start])
+    while stack:
+        parent, n = stack.pop()
+        yield parent, n
+        new = set(g[n]) - enqueued
+        enqueued |= new
+        stack.extend([(n, child) for child in new])
+
+
+def shortest_path(g, start, end):
+    parents = {}
+    for parent, child in bfs(g, start):
+        parents[child] = parent
+        if child == end:
+            revpath = [end]
+            while True:
+                parent = parents[child]
+                revpath.append(parent)
+                if parent == start:
+                    break
+                child = parent
+            return list(reversed(revpath))
+    return None  # or raise appropriate exception
+
+
+if __name__ == '__main__':
+    graph = {'150 0': ['100 0', '150 50'],
+             '150 50': ['150 0', '100 50', '150 100'],
+             '150 100': ['150 50', '100 100', '150 150'],
+             '150 150': ['150 100', '100 150'],
+             '100 0': ['150 0', '100 50', '50 0'],
+             '100 50': ['100 0', '150 50', '100 100', '50 50'],
+             '100 100': ['100 50', '150 100', '100 150', '50 100'],
+             '100 150': ['150 150', '100 100', '50 150'],
+             '50 0': ['100 0', '50 50', '0 0'],
+             '50 50': ['50 0', '100 50', '50 100', '0 50'],
+             '50 100': ['50 50', '100 100', '50 150', '0 100'],
+             '50 150': ['50 100', '100 150', '0 150'],
+             '0 0': ['50 0', '0 50'],
+             '0 50': ['0 0', '50 50', '0 100'],
+             '0 100': ['0 50', '50 100', '0 150'],
+             '0 150': ['0 100', '50 150']}
+
     main()

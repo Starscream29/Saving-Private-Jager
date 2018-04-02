@@ -10,10 +10,11 @@ def constrain(val, min_val, max_val):
 
 
 def Spawn():
+
     # Spawn a Grunt
     side = randint(0, 2)
-    X = 50*randint(0, 25)
-    Y = 50*randint(0, 12)
+    X = 50*randint(0, 3)
+    Y = 50*randint(0, 3)
 
     if side == 0:
         return 0, Y

@@ -1,6 +1,7 @@
 # import the pygame module, so you can use it
 import pygame
 import time
+from gridGraph import gridGraph
 from Functions import constrain
 from Functions import Spawn
 from collections import deque
@@ -18,8 +19,8 @@ def main():
     pygame.display.set_caption("Scott Chang looks for his son")
 
     # create a surface on screen that has the size of 240 x 180
-    screenWidth = 200
-    screenHeight = 200
+    screenWidth = 1300
+    screenHeight = 650
     screen = pygame.display.set_mode((screenWidth, screenHeight))
 
     background = pygame.image.load("background.png")
@@ -45,7 +46,7 @@ def main():
     startTime = 0
     endTime = 0
     gruntClock = 0
-    zombies =[[0, 0]]
+    zombies = [[150, 150]]
 
     # main loop
     while running:
@@ -76,7 +77,7 @@ def main():
         # now blit the scott on screen
         screen.blit(background, (0, 0))
         Jager = pygame.image.load("Jager.PNG")
-        screen.blit(Jager, (150, 150))
+        screen.blit(Jager, (650, 500))
 
         # spawnX, spawnY = Spawn()
         #
@@ -90,7 +91,7 @@ def main():
                 currentLocation = [0, 0]
                 currentLocation = str(zombies[i][0]) + ' ' + str(zombies[i][1])
                 newLocation = [0, 0]
-                pathing = shortest_path(graph, currentLocation, '150 150')
+                pathing = shortest_path(graph, currentLocation, '650 500')
                 newLocation[0], newLocation[1] = pathing[1].split()
                 zombies[i][0] = int(newLocation[0])
                 zombies[i][1] = int(newLocation[1])
@@ -149,21 +150,6 @@ def shortest_path(g, start, end):
 
 
 if __name__ == '__main__':
-    graph = {'150 0': ['100 0', '150 50'],
-             '150 50': ['150 0', '100 50', '150 100'],
-             '150 100': ['150 50', '100 100', '150 150'],
-             '150 150': ['150 100', '100 150'],
-             '100 0': ['150 0', '100 50', '50 0'],
-             '100 50': ['100 0', '150 50', '100 100', '50 50'],
-             '100 100': ['100 50', '150 100', '100 150', '50 100'],
-             '100 150': ['150 150', '100 100', '50 150'],
-             '50 0': ['100 0', '50 50', '0 0'],
-             '50 50': ['50 0', '100 50', '50 100', '0 50'],
-             '50 100': ['50 50', '100 100', '50 150', '0 100'],
-             '50 150': ['50 100', '100 150', '0 150'],
-             '0 0': ['50 0', '0 50'],
-             '0 50': ['0 0', '50 50', '0 100'],
-             '0 100': ['0 50', '50 100', '0 150'],
-             '0 150': ['0 100', '50 150']}
+    graph = gridGraph
 
     main()

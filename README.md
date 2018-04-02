@@ -10,4 +10,8 @@ Functions.py - Contains several key functions, just to keep SPJ.py cleaner
 
 generate.py - Generates a formatted list of nodes and their adjacent nodes to create a graph file
 
+gridGraph.py - A python graph that represents the game grid
+
+generate.py - A simple print script that helps generate the gridGraph one row at a time, requires some user modifications for each row
+
 (anything).png - Image resources for the game

@@ -1,4 +1,4 @@
-# import the pygame module, so you can use it
+# import modules and functions
 import pygame
 import time
 from gridGraph import gridGraph
@@ -6,7 +6,6 @@ from Functions import constrain
 from Zombies import processGrunts, processBreachers
 
 
-# define a main function
 def main():
 
     # initialize the pygame module
@@ -15,9 +14,9 @@ def main():
     # load and set the logo
     logo = pygame.image.load("Logo.PNG")
     pygame.display.set_icon(logo)
-    pygame.display.set_caption("Scott Chang looks for his son")
+    pygame.display.set_caption("Scott Chang saves his son")
 
-    # create a surface on screen that has the size of 240 x 180
+    # create game surface
     screenWidth = 1300
     screenHeight = 650
     screen = pygame.display.set_mode((screenWidth, screenHeight))
@@ -25,23 +24,30 @@ def main():
     background = pygame.image.load("background.png")
     screen.blit(background, (0, 0))
 
-    # define scott's initial position
-    ScottX = 50
-    ScottY = 50
-    # how many pixels we move our scott
+    # set scott's initial position
+    ScottX = 650
+    ScottY = 250
+    # how many pixels each move is, also the width of each square
     step = 50
-    # check if the scott is still on screen, if not change direction
 
+    # display Scott and Jager's initial positions
+    screen.blit(background, (0, 0))
     Scott = pygame.image.load("SC.PNG")
     screen.blit(Scott, (ScottX, ScottY))
+    Jager = pygame.image.load("Jager.PNG")
+    screen.blit(Jager, (650, 500))
     pygame.display.flip()
 
+    # set up the game clock, speed this up to make the game much harder
     clock = pygame.time.Clock()
-    # define a variable to control the main loop
-    game = True
+    # 2 phases, first the player gets to prep his barricades, before the actual games starts
+    prep = True
+    game = False
 
+    # arrays containing the current locations of zombies
     grunts = []
     breachers = []
+    # preps timers for moving and spawning
     startTime = 0
     endTime = 0
     gruntClock = 0
@@ -49,12 +55,52 @@ def main():
     breacherClock = 0
     breacherSpawnClock = 0
 
-    # main loop
+    prepPhase = 0
+
+    while prep:
+        startTime = time.time()
+        # event handling, gets all event from the eventqueue
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                # read keystrokes for movement
+                if event.key == pygame.K_LEFT:
+                    ScottX -= step
+                    ScottX = constrain(ScottX, 0, screenWidth - step)
+                if event.key == pygame.K_RIGHT:
+                    ScottX += step
+                    ScottX = constrain(ScottX, 0, screenWidth - step)
+                if event.key == pygame.K_UP:
+                    ScottY -= step
+                    ScottY = constrain(ScottY, 0, screenHeight - step)
+                if event.key == pygame.K_DOWN:
+                    ScottY += step
+                    ScottY = constrain(ScottY, 0, screenHeight - step)
+            # only do something if the event if of type QUIT
+            if event.type == pygame.QUIT:
+                # change the value to False, to exit the main loop
+                prep = False
+            # check for keypress and check if it was Esc
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                prep = False
+        screen.blit(background, (0, 0))
+        screen.blit(Scott, (ScottX, ScottY))
+        screen.blit(Jager, (650, 500))
+        pygame.display.flip()
+        endTime = time.time()
+        prepPhase = prepPhase + (endTime - startTime)
+        if prepPhase >= 0.5:
+            prep = False
+            game = True
+
+        clock.tick(25)
+
+    # prep has ended, game has started.
     while game:
         startTime = time.time()
         # event handling, gets all event from the eventqueue
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
+                # Reading movement keys
                 if event.key == pygame.K_LEFT:
                     ScottX -= step
                     ScottX = constrain(ScottX, 0, screenWidth - step)
@@ -75,20 +121,21 @@ def main():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 game = False
 
-        # now blit the scott on screen
+        # display the Jager
         screen.blit(background, (0, 0))
         Jager = pygame.image.load("Jager.PNG")
         screen.blit(Jager, (650, 500))
 
+        # spawn/move zombies
         gruntClock, gruntSpawnClock = processGrunts(grunts, gruntSpawnClock, gruntClock, pygame, graph, screen)
         breacherClock, breacherSpawnClock = processBreachers(breachers, breacherSpawnClock, breacherClock, pygame, graph, screen)
 
+        # display Scott
         screen.blit(Scott, (ScottX, ScottY))
-        # and update the screen (dont forget that!)
+        # and update the screen
         pygame.display.flip()
 
-        # this will slow it down to 10 fps, so you can watch it,
-        # otherwise it would run too fast
+        # update clocks
         endTime = time.time()
         gruntClock = gruntClock + (endTime - startTime)
         gruntSpawnClock = gruntSpawnClock + (endTime - startTime)

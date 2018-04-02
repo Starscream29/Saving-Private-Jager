@@ -1,3 +1,5 @@
+# Graph for the game grid, don't try writing this by hand, use and modify generate.py to generate it instead
+
 gridGraph = {
     '50 50': ['50 0', '100 50', '50 100', '0 50'],
     '100 50': ['100 0', '150 50', '100 100', '50 50'],

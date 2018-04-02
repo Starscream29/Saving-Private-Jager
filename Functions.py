@@ -3,6 +3,7 @@ from collections import deque
 
 
 def constrain(val, min_val, max_val):
+    '''Custom constrain function'''
     if val < min_val:
         return min_val
     if val > max_val:
@@ -11,8 +12,8 @@ def constrain(val, min_val, max_val):
 
 
 def Spawn():
-
-    # Spawn a Grunt
+    '''set random spawn locations, increased chance to
+    spawn at the top of the screen than the sides'''
     side = randint(0, 5)
     X = 50*randint(0, 25)
     Y = 50*randint(0, 7)
@@ -25,8 +26,6 @@ def Spawn():
 
     else:
         return X, 0
-
-# Breadth first search
 
 
 def bfs(g, start):

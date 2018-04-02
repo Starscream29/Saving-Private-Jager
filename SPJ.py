@@ -3,8 +3,7 @@ import pygame
 import time
 from gridGraph import gridGraph
 from Functions import constrain
-from Functions import Spawn
-from collections import deque
+from Zombies import processGrunts, processBreachers
 
 
 # define a main function
@@ -38,18 +37,20 @@ def main():
     pygame.display.flip()
 
     clock = pygame.time.Clock()
-
     # define a variable to control the main loop
-    running = True
+    game = True
 
-    zombies = []
+    grunts = []
+    breachers = []
     startTime = 0
     endTime = 0
     gruntClock = 0
-    zombies = [[150, 150]]
+    gruntSpawnClock = 0
+    breacherClock = 0
+    breacherSpawnClock = 0
 
     # main loop
-    while running:
+    while game:
         startTime = time.time()
         # event handling, gets all event from the eventqueue
         for event in pygame.event.get():
@@ -69,38 +70,18 @@ def main():
             # only do something if the event if of type QUIT
             if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
-                running = False
+                game = False
             # check for keypress and check if it was Esc
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                running = False
+                game = False
 
         # now blit the scott on screen
         screen.blit(background, (0, 0))
         Jager = pygame.image.load("Jager.PNG")
         screen.blit(Jager, (650, 500))
 
-        # spawnX, spawnY = Spawn()
-        #
-        # if (gruntClock) >= 0.1:
-        #     zombies.append([spawnX, spawnY])
-        #     gruntClock = 0
-        #
-        Grunt = pygame.image.load("Grunt.PNG")
-        if gruntClock >= 0.03:
-            for i in range(len(zombies)):
-                currentLocation = [0, 0]
-                currentLocation = str(zombies[i][0]) + ' ' + str(zombies[i][1])
-                newLocation = [0, 0]
-                pathing = shortest_path(graph, currentLocation, '650 500')
-                newLocation[0], newLocation[1] = pathing[1].split()
-                zombies[i][0] = int(newLocation[0])
-                zombies[i][1] = int(newLocation[1])
-                gruntClock = 0
-
-        for j in range(len(zombies)):
-            positionX = zombies[j][0]
-            positionY = zombies[j][1]
-            screen.blit(Grunt, (positionX, positionY))
+        gruntClock, gruntSpawnClock = processGrunts(grunts, gruntSpawnClock, gruntClock, pygame, graph, screen)
+        breacherClock, breacherSpawnClock = processBreachers(breachers, breacherSpawnClock, breacherClock, pygame, graph, screen)
 
         screen.blit(Scott, (ScottX, ScottY))
         # and update the screen (dont forget that!)
@@ -110,43 +91,10 @@ def main():
         # otherwise it would run too fast
         endTime = time.time()
         gruntClock = gruntClock + (endTime - startTime)
-        clock.tick(50)
-
-
-def bfs(g, start):
-    queue, enqueued = deque([(None, start)]), set([start])
-    while queue:
-        parent, n = queue.popleft()
-        yield parent, n
-        new = set(g[n]) - enqueued
-        enqueued |= new
-        queue.extend([(n, child) for child in new])
-
-
-def dfs(g, start):
-    stack, enqueued = [(None, start)], set([start])
-    while stack:
-        parent, n = stack.pop()
-        yield parent, n
-        new = set(g[n]) - enqueued
-        enqueued |= new
-        stack.extend([(n, child) for child in new])
-
-
-def shortest_path(g, start, end):
-    parents = {}
-    for parent, child in bfs(g, start):
-        parents[child] = parent
-        if child == end:
-            revpath = [end]
-            while True:
-                parent = parents[child]
-                revpath.append(parent)
-                if parent == start:
-                    break
-                child = parent
-            return list(reversed(revpath))
-    return None  # or raise appropriate exception
+        gruntSpawnClock = gruntSpawnClock + (endTime - startTime)
+        breacherClock = breacherClock + (endTime - startTime)
+        breacherSpawnClock = breacherSpawnClock + (endTime - startTime)
+        clock.tick(25)
 
 
 if __name__ == '__main__':

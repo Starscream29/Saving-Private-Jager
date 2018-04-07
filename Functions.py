@@ -28,7 +28,37 @@ def Spawn():
         return X, 0
 
 
-def bfs(g, start):
+def bfs(g, start, barricades):
+
+    queue, enqueued = deque([(None, start)]), set([start])
+    while queue:
+        parent, n = queue.popleft()
+        node = [int(i) for i in n.split()]
+        if node not in barricades:
+            yield parent, n
+            new = set(g[n]) - enqueued
+            enqueued |= new
+            queue.extend([(n, child) for child in new])
+
+
+def shortest_path(g, start, end, barricades):
+    parents = {}
+    for parent, child in bfs(g, start, barricades):
+        parents[child] = parent
+        if child == end:
+            revpath = [end]
+            while True:
+                parent = parents[child]
+                revpath.append(parent)
+                if parent == start:
+                    break
+                child = parent
+            return list(reversed(revpath))
+    return None  # or raise appropriate exception
+
+
+def bfsBreacher(g, start, barricades):
+
     queue, enqueued = deque([(None, start)]), set([start])
     while queue:
         parent, n = queue.popleft()
@@ -38,19 +68,9 @@ def bfs(g, start):
         queue.extend([(n, child) for child in new])
 
 
-def dfs(g, start):
-    stack, enqueued = [(None, start)], set([start])
-    while stack:
-        parent, n = stack.pop()
-        yield parent, n
-        new = set(g[n]) - enqueued
-        enqueued |= new
-        stack.extend([(n, child) for child in new])
-
-
-def shortest_path(g, start, end):
+def shortest_pathBreacher(g, start, end, barricades):
     parents = {}
-    for parent, child in bfs(g, start):
+    for parent, child in bfsBreacher(g, start, barricades):
         parents[child] = parent
         if child == end:
             revpath = [end]

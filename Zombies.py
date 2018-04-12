@@ -4,6 +4,7 @@ from Functions import shortest_pathBreacher
 import random
 import pygame
 
+
 def processGrunts(barricades, grunts, gruntSpawnClock, gruntClock, graph, screen):
     '''the most common zombie, grunts spawn in large numbers and attempt to
     run at jager, dies in a single shot, if one reaches jager, the play loses,
@@ -27,6 +28,8 @@ def processGrunts(barricades, grunts, gruntSpawnClock, gruntClock, graph, screen
             grunts[i][0] = int(newLocation[0])
             grunts[i][1] = int(newLocation[1])
             # reset the move clock
+            deathsound = pygame.mixer.Sound('Grunt Death.wav')
+            deathsound.play()
             gruntClock = 0
 
     for j in range(len(grunts)):

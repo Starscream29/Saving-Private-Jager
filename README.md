@@ -21,3 +21,5 @@ generate.py - A simple print script that helps generate the gridGraph one row at
 (anything).png - Image resources for the game
 
 (anything).mp3 or .wav - Sound or music resources
+
+Music credit - Payday 2's "Fuse Box" by Simon Viklund

@@ -75,6 +75,8 @@ def shortest_pathBreacher(g, start, end, barricades):
         if child == end:
             revpath = [end]
             while True:
+                if child is None:
+                    break
                 parent = parents[child]
                 revpath.append(parent)
                 if parent == start:

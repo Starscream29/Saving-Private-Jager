@@ -4,13 +4,14 @@ import time
 from gridGraph import gridGraph
 from Functions import constrain
 from Zombies import processGrunts, processBreachers
+import sys
 
 
 def main():
 
     # initialize the pygame module
     pygame.init()
-    pygame.mixer.pre_init(44100, 16, 2, 4096)
+
     # load and set the logo
     logo = pygame.image.load("Logo.PNG")
     pygame.display.set_icon(logo)
@@ -97,16 +98,13 @@ def main():
         pygame.display.flip()
         endTime = time.time()
         prepPhase = prepPhase + (endTime - startTime)
-        if prepPhase >= 0.01:
+        if prepPhase >= 0.3:
             prep = False
             game = True
 
         clock.tick(25)
 
-    pygame.mixer.music.load('Music.mp3')
-    pygame.mixer.music.play(0)
     # prep has ended, game has started.
-
     while game:
         startTime = time.time()
         # event handling, gets all event from the eventqueue
@@ -125,7 +123,6 @@ def main():
                 if event.key == pygame.K_DOWN:
                     ScottY += step
                     ScottY = constrain(ScottY, 0, screenHeight - step)
-
             # only do something if the event if of type QUIT
             if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
@@ -172,9 +169,11 @@ def main():
         breacherClock = breacherClock + (endTime - startTime)
         breacherSpawnClock = breacherSpawnClock + (endTime - startTime)
         detonatingClock = detonatingClock + (endTime - startTime)
-        clock.tick(25)
+        clock.tick(60)
 
 
 if __name__ == '__main__':
     graph = gridGraph
     main()
+    pygame.quit()
+    sys.exit()

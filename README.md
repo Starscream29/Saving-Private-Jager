@@ -4,7 +4,9 @@ Help Scott save his son from the zombies (so he can beat him later).
 
 Files:
 
-SPJ.py - The actual game, run this to play
+SPJFinal.py - The actual game, run this to play
+
+SPJSprites.py - Takes in movement and shooting commands
 
 Functions.py - Contains several key functions, just to keep SPJ.py cleaner
 
@@ -17,3 +19,5 @@ gridGraph.py - A python graph that represents the game grid
 generate.py - A simple print script that helps generate the gridGraph one row at a time, requires some user modifications for each row
 
 (anything).png - Image resources for the game
+
+(anything).mp3 or .wav - Sound or music resources

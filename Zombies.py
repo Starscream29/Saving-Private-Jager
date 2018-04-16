@@ -15,12 +15,12 @@ def processGrunts(barricades, grunts, gruntSpawnClock, gruntClock, graph, screen
     jager = SPJsprites.Jager(screen)
     spawnX, spawnY = Spawn()
 
-    if gruntSpawnClock >= 0.1:
+    if (gruntSpawnClock) >= 0.1:
         grunts.append([spawnX, spawnY])
         # reset the spawn clock
         gruntSpawnClock = 0
 
-    if gruntClock >= 0.3:
+    if gruntClock >= 0.4:
         for i in range(len(grunts)):
             currentLocation = [0, 0]
             currentLocation = str(grunts[i][0]) + ' ' + str(grunts[i][1])
@@ -34,20 +34,20 @@ def processGrunts(barricades, grunts, gruntSpawnClock, gruntClock, graph, screen
 
     for j in range(len(grunts)):
         Grunt = pygame.image.load("Grunt.PNG")
-        if grunts[j][0] is not 0:
+        if j < len(grunts):
             positionX = grunts[j][0]
             positionY = grunts[j][1]
             rectangle = pygame.draw.rect(screen, (50, 50, 50), (positionX, positionY, 50, 50))
             screen.blit(Grunt, (positionX, positionY))
             if jager.rect.colliderect(rectangle):
-                print("Jager is dead, mission failed, better luck next time")
+                print("Jager is dead. Mission failed. Better luck next time.")
                 pygame.quit()
                 sys.exit()
             for bullet in bulletList:
                 if bullet.rect.colliderect(rectangle):
-                    # Replace with get rid of path finding
-                    # print("Hit!")
-                    grunts[j][0] = 0
+                    bulletList.remove(bullet)
+                    del grunts[j]
+                    # grunts[j][0] = 0
                     deathsound = pygame.mixer.Sound("Grunt Death.wav")
                     deathsound.play()
 
@@ -56,7 +56,7 @@ def processGrunts(barricades, grunts, gruntSpawnClock, gruntClock, graph, screen
 
 def processBreachers(detonating, target, barricades, breachers, breachersSpawnClock, breachersClock, graph, screen, bulletList):
     '''spawns much more rarely, but move very quickly. They don't attack Scott or Jager,
-    instead, they prioritize going after barricades. If they are allowed to attach to a barricade,
+    instead, they prioritize going after barricades. If they are allowed to attach to a barricade,\
     the barricade is destroyed'''
 
     spawnX, spawnY = Spawn()
@@ -91,15 +91,16 @@ def processBreachers(detonating, target, barricades, breachers, breachersSpawnCl
             breachersClock = 0
 
     for j in range(len(breachers)):
-
-        positionX = breachers[j][0]
-        positionY = breachers[j][1]
-        rectangle = pygame.draw.rect(screen, (50, 50, 50), (positionX, positionY, 50, 50))
-        screen.blit(Breacher, (positionX, positionY))
-        for bullet in bulletList:
-            if bullet.rect.colliderect(rectangle):
-                # Replace with get rid of path finding
-                deathsound = pygame.mixer.Sound("Breacher Death.wav")
-                deathsound.play()
-                del breachers[j]
+        if j < len(breachers):
+            positionX = breachers[j][0]
+            positionY = breachers[j][1]
+            rectangle = pygame.draw.rect(screen, (50, 50, 50), (positionX, positionY, 50, 50))
+            screen.blit(Breacher, (positionX, positionY))
+            for bullet in bulletList:
+                if bullet.rect.colliderect(rectangle):
+                    # print("Hit!")
+                    bulletList.remove(bullet)
+                    deathsound = pygame.mixer.Sound("Breacher Death.wav")
+                    deathsound.play()
+                    del breachers[j]
     return breachersClock, breachersSpawnClock, detonating

@@ -1,6 +1,9 @@
 # Saving-Private-Jager
 
-Help Scott save his son from the zombies (so he can beat him later).
+Help Scott save Jager from the zombies.
+
+To run, download and unzip the file. Open and run SPJFinal.py using whatever python software you wish. 
+
 
 Files:
 

@@ -9,7 +9,7 @@ class Scott(py.sprite.Sprite):
 
         py.sprite.Sprite.__init__(self)
 
-        self.image = py.image.load("SC.PNG").convert()
+        self.image = py.image.load("Images/SC.PNG").convert()
         self.center = (650, 300)
         self.width, self.height = screen.get_size()
         self.rect = self.image.get_rect(center=self.center)
@@ -92,7 +92,7 @@ class Jager(py.sprite.Sprite):
 
         py.sprite.Sprite.__init__(self)
 
-        self.image = py.image.load("Jager.PNG").convert()
+        self.image = py.image.load("Images/Jager.PNG").convert()
         self.center = (650, 500)
         self.width, self.height = screen.get_size()
         self.rect = self.image.get_rect(center=self.center)

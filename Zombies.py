@@ -7,15 +7,17 @@ import SPJsprites
 import sys
 
 
-def processGrunts(barricades, grunts, gruntSpawnClock, gruntClock, graph, screen, bulletList):
+def processGrunts(barricades, grunts, gruntSpawnClock, gruntClock, graph, screen, bulletList, score, spawntime):
     '''the most common zombie, grunts spawn in large numbers and attempt to
     run at jager, dies in a single shot, if one reaches jager, the play loses,
     ignores Scott'''
 
+    gameOver = False
+
     jager = SPJsprites.Jager(screen)
     spawnX, spawnY = Spawn()
 
-    if (gruntSpawnClock) >= 0.1:
+    if (gruntSpawnClock) >= spawntime:
         grunts.append([spawnX, spawnY])
         # reset the spawn clock
         gruntSpawnClock = 0
@@ -33,28 +35,28 @@ def processGrunts(barricades, grunts, gruntSpawnClock, gruntClock, graph, screen
             gruntClock = 0
 
     for j in range(len(grunts)):
-        Grunt = pygame.image.load("Grunt.PNG")
+        Grunt = pygame.image.load("Images/Grunt.PNG")
         if j < len(grunts):
             positionX = grunts[j][0]
             positionY = grunts[j][1]
             rectangle = pygame.draw.rect(screen, (50, 50, 50), (positionX, positionY, 50, 50))
             screen.blit(Grunt, (positionX, positionY))
             if jager.rect.colliderect(rectangle):
-                print("Jager is dead. Mission failed. Better luck next time.")
-                pygame.quit()
-                sys.exit()
+                print("Jager is dead. ")
+                gameOver = True
             for bullet in bulletList:
                 if bullet.rect.colliderect(rectangle):
                     bulletList.remove(bullet)
                     del grunts[j]
                     # grunts[j][0] = 0
-                    deathsound = pygame.mixer.Sound("Grunt Death.wav")
+                    deathsound = pygame.mixer.Sound("Sound/Grunt Death.wav")
                     deathsound.play()
+                    score = score + 1
 
-    return gruntClock, gruntSpawnClock
+    return gruntClock, gruntSpawnClock, score, gameOver
 
 
-def processBreachers(detonating, target, barricades, breachers, breachersSpawnClock, breachersClock, graph, screen, bulletList):
+def processBreachers(detonating, target, barricades, breachers, breachersSpawnClock, breachersClock, graph, screen, bulletList, score):
     '''spawns much more rarely, but move very quickly. They don't attack Scott or Jager,
     instead, they prioritize going after barricades. If they are allowed to attach to a barricade,\
     the barricade is destroyed'''
@@ -66,9 +68,8 @@ def processBreachers(detonating, target, barricades, breachers, breachersSpawnCl
         target.append(" ".join([str(x) for x in random.choice(barricades)]))
         # reset hte spawn clock
         breachersSpawnClock = 0
-        print("Another breacher has spawned")
 
-    Breacher = pygame.image.load("Breacher.PNG")
+    Breacher = pygame.image.load("Images/Breacher.PNG")
     if breachersClock >= 0.03:
         for i in range(len(breachers)):
             currentLocation = [0, 0]
@@ -100,7 +101,8 @@ def processBreachers(detonating, target, barricades, breachers, breachersSpawnCl
                 if bullet.rect.colliderect(rectangle):
                     # print("Hit!")
                     bulletList.remove(bullet)
-                    deathsound = pygame.mixer.Sound("Breacher Death.wav")
+                    deathsound = pygame.mixer.Sound("Sound/Breacher Death.wav")
                     deathsound.play()
                     del breachers[j]
-    return breachersClock, breachersSpawnClock, detonating
+                    score = score + 5
+    return breachersClock, breachersSpawnClock, detonating, score

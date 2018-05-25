@@ -11,7 +11,7 @@ def main():
     pygame.init()
 
     # load and set the logo
-    logo = pygame.image.load("Logo.PNG")
+    logo = pygame.image.load("Images/Logo.PNG")
     pygame.display.set_icon(logo)
 
     # set the caption
@@ -27,11 +27,11 @@ def main():
     screen.fill(BACKGROUND_COLOR)
 
     # display Jager's initial position
-    Jager = pygame.image.load("Jager.PNG")
+    Jager = pygame.image.load("Images/Jager.PNG")
     screen.blit(Jager, (650, 500))
 
     # load the wall image
-    wall = pygame.image.load("wall.PNG")
+    wall = pygame.image.load("Images/wall.PNG")
 
     # update contents of entire display
     pygame.display.flip()
@@ -110,9 +110,11 @@ def main():
         clock.tick(30)
 
     # Music
-    pygame.mixer.music.load("Music.mp3")
+    pygame.mixer.music.load("Sound/Music.mp3")
     pygame.mixer.music.play(0)
 
+    score = 0
+    spawntime = 0.2
     # prep has ended, game has started.
     while game:
         startTime = time.time()
@@ -141,14 +143,19 @@ def main():
             screen.blit(wall, n)
 
         # spawn/move zombies
-        gruntClock, gruntSpawnClock = processGrunts(barricades, grunts, gruntSpawnClock, gruntClock, graph, screen, bulletList)
-        breacherClock, breacherSpawnClock, detonatingBreacher = processBreachers(detonating, target, barricades, breachers, breacherSpawnClock, breacherClock, graph, screen, bulletList)
+        gruntClock, gruntSpawnClock, score, gameOver = processGrunts(barricades, grunts, gruntSpawnClock, gruntClock, graph, screen, bulletList, score, spawntime)
+
+        # Check if Jager is dead, if so, end the game
+        if gameOver is True:
+            pygame.quit()
+            return score
+        breacherClock, breacherSpawnClock, detonatingBreacher, score = processBreachers(detonating, target, barricades, breachers, breacherSpawnClock, breacherClock, graph, screen, bulletList, score)
 
         endTime2 = time.time()
         # display detonating breacher
         if detonatingBreacher:
             if detonatingClock >= 0.3:
-                fuze = pygame.image.load("fuze.PNG")
+                fuze = pygame.image.load("Images/fuze.PNG")
                 detonatingPosition = [int(i) for i in detonatingBreacher[0].split()]
                 screen.blit(fuze, detonatingPosition)
                 detonatingClock = 0
@@ -157,6 +164,11 @@ def main():
                     barricades.remove(detonatingPosition)
             else:
                 detonatingClock = detonatingClock + (endTime2 - startTime)
+
+        # Update the score
+        myfont = pygame.font.SysFont("monospace", 30)
+        label = myfont.render("score: " + str(score), 1, (255, 255, 0))
+        screen.blit(label, (10, 600))
 
         # gruntList.draw(screen)
         pygame.display.flip()
@@ -168,8 +180,16 @@ def main():
         breacherClock = breacherClock + (endTime - startTime)
         breacherSpawnClock = breacherSpawnClock + (endTime - startTime)
         detonatingClock = detonatingClock + (endTime - startTime)
+        if spawntime > 0.08:
+            spawntime = spawntime - 0.0001
+        else:
+            spawntime = spawntime - 0.00003
+
         clock.tick(60)
+
 
 if __name__ == '__main__':
     graph = gridGraph
-    main()
+    score = main()
+
+    print("Game over, your score was: " + str(score))
